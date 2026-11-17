@@ -1,7 +1,65 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\StaffAuthController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+use App\Http\Controllers\Auth\StaffPasswordController;
+use App\Http\Controllers\Kasir\ResetCustomerPasswordController;
+
+
+
+Route::redirect('/', '/login');
+Route::get('/login', [
+    StaffAuthController::class,
+    'create'
+    ])->name('login');
+
+Route::post('/login', [
+    StaffAuthController::class,
+    'store'
+    ])
+    ->middleware('throttle:5,1')
+    ->name('login.store');
+
+Route::middleware('auth')->group(function(){
+    //Logout
+    Route::post('/logout',[
+        StaffAuthController::class,
+        'destroy'
+    ])->name('logout');
+
+    Route::get('/change-password', [
+        StaffPasswordController::class,
+        'edit'
+    ])->name('password.edit');
+
+    Route::put('/change-password', [
+        StaffPasswordController::class,
+        'update'
+    ])->name('password.update');
+
+    //kasir
+    Route::middleware('role:kasir')
+    ->prefix('kasir')
+    ->name('kasir.')
+    ->group(function(){
+
+        Route::get('/dashboard', function(){
+            return response('kasir.dashboard');
+        })->name('dashboard');
+
+        Route::post('/pelanggan/{pelanggan}/reset-password', [
+            ResetCustomerPasswordController::class,
+            'reset'
+        ])->name('pelanggan.reset-password');
+     });
+        Route::middleware('role:manager')
+        ->prefix('manajer')
+        ->name('manajer.')
+        ->group(function(){
+            Route::get('/dashboard', function(){
+                return response('manajer.dashboard');
+            })->name('dashboard');
+        });
+    });
+

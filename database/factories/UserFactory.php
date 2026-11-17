@@ -42,4 +42,25 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function manager(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'peran' => User::PERAN_MANAGER,
+        ]);
+    }
+
+    public function kasir(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'peran' => User::PERAN_KASIR,
+        ]);
+    }
+
+    public function pelanggan(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'peran' => User::PERAN_PELANGGAN,
+        ]);
+    }
 }

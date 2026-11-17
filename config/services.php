@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'supplier' => [
+        'url' => env('SUPPLIER_API_URL', 'https://ukksmkn1katapang.next-it.co.id/kafe'),
+        'key' => env('SUPPLIER_API_KEY'),
+    ],
 ];

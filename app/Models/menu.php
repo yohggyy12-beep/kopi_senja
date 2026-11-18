@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\DetailResep;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Menu extends Model
 {
+    protected $table = 'menus';
     protected $fillable =
     [
     'nama',
@@ -19,39 +22,58 @@ class Menu extends Model
     protected function casts(): array
     {
         return [
-            'harga_jual' => 'float',
-            'status_aktif' => 'boolean'];
+            'harga_jual' => 'decimal:2',
+            'status_aktif' => 'boolean',
+            'resep_lengkap' => 'boolean',
+            ];
     }
 
-    public function detail_resep()
+   public function detailResep(): HasMany
     {
-        return $this->hasMany(DetailResep::class);
+        return $this->hasMany(
+            DetailResep::class,
+            'menu_id'
+        );
     }
 
-    public function availability(): string
+    public function bahanBakus(): BelongsToMany
     {
-        if (! $this->status_aktif) {
-            return 'nonaktif';
-        }
-        if ($this->detail_resep->isEmpty()) {
-            return 'belum_ada_resep';
-        }
-        foreach ($this->detail_resep as $detail) {
-            if ($detail->bahan_baku->jumlah_stok < $detail->jumlah_per_porsi) {
-                return 'habis';
-            }
-        }
-        return 'tersedia';
+        return $this->belongsToMany(
+            BahanBaku::class,
+            'detail_resep',
+            'menu_id',
+            'bahan_baku_id'
+        )
+        ->withPivot('jumlah_per_porsi')
+        ->withTimestamps();
     }
 
-    public function hpp(): float
+    public function detailPesanan(): HasMany
     {
-        return round($this->detail_resep->sum(
-            fn ($d) => $d->jumlah_per_porsi * $d->bahan_baku->harga_satuan_saat_pemesanan), 2);
+        return $this->hasMany(
+            DetailPesanan::class,
+            'menu_id'
+        );
     }
 
-    public function margin(): float
+    /**
+     * Memeriksa apakah menu sudah mempunyai resep.
+     */
+    public function hasResepLengkap(): bool
     {
-        return round($this->harga_jual - $this->hpp(), 2);
+        return $this->resep_lengkap
+            && $this->detailResep()->exists();
+    }
+
+    /**
+     * Memeriksa apakah menu bisa dipesan
+     * berdasarkan status aktif dan resep.
+     *
+     * Pemeriksaan stok akan dilengkapi pada fase 04.
+     */
+    public function isBisaDipesan(): bool
+    {
+        return $this->status_aktif
+            && $this->hasResepLengkap();
     }
 }

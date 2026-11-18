@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\StaffAuthController;
 use App\Http\Controllers\Auth\StaffPasswordController;
 use App\Http\Controllers\Kasir\ResetCustomerPasswordController;
 use App\Http\Controllers\Manajer\BahanBakuController;
+use App\Http\Controllers\Manajer\MenuController;
 
 
 
@@ -91,6 +92,30 @@ Route::middleware('auth')->group(function(){
             '/bahan-baku/{bahanBaku}',
             [BahanBakuController::class, 'destroy']
         )->name('bahan-baku.destroy');
+
+    });
+
+    Route::middleware([
+    'auth',
+    'role:manager',
+])
+    ->prefix('manajer')
+    ->name('manajer.')
+    ->group(function () {
+
+        // CRUD bahan baku yang sudah dibuat.
+        // ...
+
+        // CRUD menu.
+        Route::apiResource(
+            'menu',
+            MenuController::class
+        )->only([
+            'index',
+            'store',
+            'update',
+            'destroy',
+        ]);
 
     });
 

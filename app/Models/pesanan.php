@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class pesanan extends Model
+class Pesanan extends Model
 {
     public $fillable = [
         'nomor_pesanan',
@@ -28,5 +28,5 @@ class pesanan extends Model
     }
 
     public function dibuat_oleh_pengguna(){ return $this->belongsTo(User::class, 'dibuat_oleh_pengguna_id');}
-    public function DetailPesanan(){ return $this->hasMany(detail_pesanan::class);}
+    public function DetailPesanan(){ return $this->hasMany(DetailPesanan::class);}
 }

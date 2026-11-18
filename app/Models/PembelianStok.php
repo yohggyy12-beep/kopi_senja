@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\BahanBaku;
 
-class pembelian_stok extends Model
+class PembelianStok extends Model
 {
+    protected $table = 'pembelian_stok';
+
     public $fillable = [
         'bahan_baku_id',
         'dicatat_oleh_pengguna_id',
@@ -20,8 +23,7 @@ class pembelian_stok extends Model
             'tanggal_pembelian' => 'date',
         ];
     }
-
-    public function bahan_baku(){ return $this->belongsTo(bahan_baku::class);}
+    public function bahan_baku(){ return $this->belongsTo(BahanBaku::class);}
     public function dicatat_oleh_pengguna(){ return $this->belongsTo(User::class, 'dicatat_oleh_pengguna_id');}
 
 }

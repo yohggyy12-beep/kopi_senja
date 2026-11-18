@@ -2,8 +2,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DetailBahanPesanan;
 
-class detail_pesanan extends Model
+class DetailPesanan extends Model
 {
     protected $fillable = [
         'pesanan_id', 'menu_id', 'nama_menu_saat_pemesanan', 'jumlah',
@@ -15,7 +16,7 @@ class detail_pesanan extends Model
         return ['harga_satuan_saat_pemesanan' => 'float', 'subtotal' => 'float'];
     }
 
-    public function pesanan()           { return $this->belongsTo(pesanan::class); }
-    public function menu()              { return $this->belongsTo(menu::class); }
-    public function DetailBahanPesanan()  { return $this->hasMany(detail_bahan_pesanan::class); }
+    public function pesanan()           { return $this->belongsTo(Pesanan::class); }
+    public function menu()              { return $this->belongsTo(Menu::class); }
+    public function DetailBahanPesanan()  { return $this->hasMany(DetailBahanPesanan::class); }
 }

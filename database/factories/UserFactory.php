@@ -25,41 +25,43 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'nama' => fake()->name(),
+            'nama_pengguna' => fake()->unique()->userName(),
+            'nomor_telepon' => fake()->unique()->phoneNumber(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'kata_sandi' => static::$password ??= Hash::make('password'),
+            'peran' => 'pelanggan',
+            'wajib_ganti_kata_sandi' => false,
             'remember_token' => Str::random(10),
         ];
     }
-
     /**
      * Indicate that the model's email address should be unverified.
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }
 
     public function manager(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'peran' => User::PERAN_MANAGER,
+        return $this->state(fn(array $attributes) => [
+            'peran' => 'manager',
         ]);
     }
 
     public function kasir(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'peran' => User::PERAN_KASIR,
+        return $this->state(fn(array $attributes) => [
+            'peran' => 'kasir',
         ]);
     }
 
     public function pelanggan(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'peran' => User::PERAN_PELANGGAN,
         ]);
     }

@@ -2,15 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
-use App\Models\pesanan;
-use App\Models\pembelian_stok;
 
 class User extends Authenticatable
 {
@@ -28,7 +24,6 @@ class User extends Authenticatable
         'kata_sandi',
         'remember_token',
     ];
-
     protected function casts(): array
     {
         return [
@@ -42,9 +37,9 @@ class User extends Authenticatable
     }
 
     // Memberi tahu Laravel lokasi password sebenarnya.
-    public function getAuthPasswordName(): string
+    public function getAuthPassword()
     {
-        return 'kata_sandi';
+        return $this->kata_sandi;
     }
 
     // Konstanta peran.
@@ -65,7 +60,7 @@ class User extends Authenticatable
     public function pembelianStokDicatat(): HasMany
     {
         return $this->hasMany(
-            pembelian_stok::class,
+            PembelianStok::class,
             'dicatat_oleh_pengguna_id'
         );
     }

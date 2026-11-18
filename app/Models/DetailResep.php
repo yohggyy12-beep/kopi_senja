@@ -21,5 +21,5 @@ class DetailResep extends Model
         ];
     }
     public function menu(){ return $this->belongsTo(Menu::class);}
-    public function bahan_baku(){ return $this->belongsTo(bahan_baku::class);}
+    public function bahan_baku(){ return $this->belongsTo(BahanBaku::class);}
 }

@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class bahan_baku extends Model
+class BahanBaku extends Model
 {
     protected $table = 'bahan_baku';
     protected $guarded = ['id'];
@@ -32,17 +33,33 @@ class bahan_baku extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (bahan_baku $bahan_baku) {
+        static::saving(function (BahanBaku $bahan_baku) {
             $bahan_baku->nama_normalisasi = self::nama_normalisasi($bahan_baku->nama);
         });
     }
     public static function nama_normalisasi(string $nama): string
     {
-        return mb_strtolower(trim(preg_replace('/\s+/', '', $nama)));
+        return mb_strtolower(trim(preg_replace('/\s+/', ' ', $nama)));
     }
 
-    public function islow_stock(): bool
+    public function detailResep(): HasMany
     {
-        return $this->jumlah_stok <= $this->stok_minimum;
+        return $this->hasMany(DetailResep::class, 'bahan_baku_id');
+    }
+
+    public function pembelianStok(): HasMany
+    {
+        return $this->hasMany(PembelianStok::class, 'bahan_baku_id');
+    }
+
+    public function detailBahanPesanan(): HasMany
+    {
+        return $this->hasMany(DetailBahanPesanan::class, 'bahan_baku_id');
+    }
+
+    public function isStokRendah(): bool
+    {
+        return (float) $this->jumlah_stok
+        <= (float) $this->stok_minimum;
     }
 }

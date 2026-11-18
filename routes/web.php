@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\StaffAuthController;
 
 use App\Http\Controllers\Auth\StaffPasswordController;
 use App\Http\Controllers\Kasir\ResetCustomerPasswordController;
+use App\Http\Controllers\Manajer\BahanBakuController;
 
 
 
@@ -61,5 +62,35 @@ Route::middleware('auth')->group(function(){
                 return response('manajer.dashboard');
             })->name('dashboard');
         });
+    });
+
+   Route::middleware([
+    'auth',
+    'role:manager',
+])
+    ->prefix('manajer')
+    ->name('manajer.')
+    ->group(function () {
+
+     Route::get(
+            '/bahan-baku',
+            [BahanBakuController::class, 'index']
+        )->name('bahan-baku.index');
+
+        Route::post(
+            '/bahan-baku',
+            [BahanBakuController::class, 'store']
+        )->name('bahan-baku.store');
+
+        Route::put(
+            '/bahan-baku/{bahanBaku}',
+            [BahanBakuController::class, 'update']
+        )->name('bahan-baku.update');
+
+        Route::delete(
+            '/bahan-baku/{bahanBaku}',
+            [BahanBakuController::class, 'destroy']
+        )->name('bahan-baku.destroy');
+
     });
 

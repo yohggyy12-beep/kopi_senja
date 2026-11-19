@@ -2,65 +2,61 @@
 
 namespace App\Support\Import;
 
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class CsvValueNormalizer
 {
     /**
-     * Konfigurasi default konversi satuan ke satuan dasar.
-     */
-    protected const DEFAULT_UNIT_MAP = [
-        'kg' => ['base' => 'g', 'factor' => 1000.0],
-        'g' => ['base' => 'g', 'factor' => 1.0],
-        'liter' => ['base' => 'ml', 'factor' => 1000.0],
-        'l' => ['base' => 'ml', 'factor' => 1000.0],
-        'ml' => ['base' => 'ml', 'factor' => 1.0],
-        'pcs' => ['base' => 'pcs', 'factor' => 1.0],
-    ];
-
-    /**
-     * Menormalkan nama (huruf kecil, menghapus spasi ganda dan spasi di ujung teks).
+     * Menyeragamkan nama bahan.
      */
     public static function normalizeName(string $name): string
     {
-        return mb_strtolower(trim(preg_replace('/\s+/', ' ', $name)));
+        return (string) Str::of($name)
+            ->trim()
+            ->lower()
+            ->replaceMatches('/\s+/', ' ');
     }
 
     /**
-     * Mengonversi takaran atau stok ke satuan dasar ('g', 'ml', 'pcs').
-     *
-     * @return array{value: float, unit: string, factor: float}
+     * Mengubah kuantitas menjadi satuan dasar.
      */
-    public static function toBaseUnit(float $value, string $unit): array
-    {
-        $normalizedUnit = mb_strtolower(trim($unit));
-        $unitMap = config('import.units', self::DEFAULT_UNIT_MAP);
+    public static function toBaseUnit(
+        float $quantity,
+        string $unit
+    ): array {
+        $unit = strtolower(trim($unit));
 
-        if (!isset($unitMap[$normalizedUnit])) {
-            throw new InvalidArgumentException("Satuan '{$unit}' tidak dikenali dalam sistem.");
-        }
+        [$baseUnit, $factor] = match ($unit) {
+            'kg' => ['g', 1000],
+            'liter', 'l' => ['ml', 1000],
+            'g' => ['g', 1],
+            'ml' => ['ml', 1],
+            'pcs' => ['pcs', 1],
 
-        $base = $unitMap[$normalizedUnit]['base'];
-        $factor = (float) $unitMap[$normalizedUnit]['factor'];
+            default => throw new InvalidArgumentException(
+                "Satuan tidak dikenali: {$unit}"
+            ),
+        };
 
         return [
-            'value' => (float) ($value * $factor),
-            'unit' => $base,
+            'base_unit' => $baseUnit,
+            'quantity' => round($quantity * $factor, 3),
             'factor' => $factor,
+            // Kompatibilitas alias
+            'unit' => $baseUnit,
+            'value' => round($quantity * $factor, 3),
         ];
     }
 
     /**
-     * Menghitung harga per satuan dasar berdasarkan faktor konversi satuan.
-     * Contoh: Rp 180.000 / kg (faktor 1000) => Rp 180 / g.
+     * Mengubah harga menjadi harga per satuan dasar.
      */
-    public static function pricePerBaseUnit(float $price, float $factor): float
-    {
-        if ($factor <= 0) {
-            return (float) $price;
-        }
-
-        return (float) ($price / $factor);
+    public static function pricePerBaseUnit(
+        float $price,
+        float $factor
+    ): float {
+        return round($price / $factor, 4);
     }
 
     /**
@@ -69,7 +65,7 @@ class CsvValueNormalizer
     public static function resolveAlias(string $name, ?array $aliases = null): string
     {
         $normalized = self::normalizeName($name);
-        $aliasMap = $aliases ?? config('import.aliases', []);
+        $aliasMap = $aliases ?? config('import.ingredient_aliases', config('import.aliases', []));
 
         return $aliasMap[$normalized] ?? $normalized;
     }

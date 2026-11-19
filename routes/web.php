@@ -118,31 +118,11 @@ Route::middleware('auth')->group(function(){
             'destroy',
         ]);
 
-        // CRUD resep.
-        Route::get(
-            '/resep',
-            [ResepController::class, 'index']
-        )->name('resep.index');
-
-        Route::get(
-            '/resep/{menu}',
-            [ResepController::class, 'show']
-        )->name('resep.show');
-
-        Route::post(
-            '/resep',
-            [ResepController::class, 'store']
-        )->name('resep.store');
-
-        Route::put(
-            '/resep/{menu}',
-            [ResepController::class, 'update']
-        )->name('resep.update');
-
-        Route::delete(
-            '/resep/{menu}',
-            [ResepController::class, 'destroy']
-        )->name('resep.destroy');
-
+        // CRUD Resep
+        Route::get('/resep', [ResepController::class, 'index'])->name('resep.index');
+        Route::get('/resep/{menu}', [ResepController::class, 'show'])->name('resep.show');
+        Route::post('/resep', [ResepController::class, 'store'])->name('resep.store');
+        Route::put('/resep/{menu}', [ResepController::class, 'update'])->name('resep.update');
+        Route::delete('/resep/{menu}', [ResepController::class, 'destroy'])->name('resep.destroy');
     });
 

@@ -1,0 +1,21 @@
+kode,nama,nama_normalisasi,stok_awal,satuan_dasar,harga_per_satuan_dasar
+BHN-001,"Biji kopi arabika","biji kopi arabika",5000,g,180
+BHN-002,"Biji kopi robusta","biji kopi robusta",3000,g,120
+BHN-003,"Susu UHT","susu uht",20000,ml,18
+BHN-004,"Gula pasir","gula pasir",5000,g,16
+BHN-005,"Gula aren cair","gula aren cair",2000,ml,45
+BHN-006,"Sirup karamel","sirup karamel",1000,ml,85
+BHN-007,"Cokelat bubuk","cokelat bubuk",1500,g,95
+BHN-008,"Matcha bubuk","matcha bubuk",500,g,420
+BHN-009,"Teh celup","teh celup",100,pcs,800
+BHN-010,Lemon,lemon,30,pcs,3000
+BHN-011,"Es batu","es batu",10000,g,4
+BHN-012,"Roti tawar","roti tawar",40,pcs,1500
+BHN-013,"Keju slice","keju slice",50,pcs,2500
+BHN-014,Mentega,mentega,1000,g,60
+BHN-015,"Kentang beku","kentang beku",5000,g,38
+BHN-016,"Gelas 12 oz","gelas 12 oz",200,pcs,450
+BHN-017,"Gelas 16 oz","gelas 16 oz",200,pcs,550
+BHN-018,"Tutup gelas","tutup gelas",400,pcs,150
+BHN-019,Sedotan,sedotan,300,pcs,100
+BHN-020,"Whipped cream","whipped cream",500,ml,70

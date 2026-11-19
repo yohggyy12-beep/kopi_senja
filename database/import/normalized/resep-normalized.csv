@@ -1,0 +1,66 @@
+kode_menu,nama_bahan_asli,nama_bahan_normalisasi,takaran,satuan_dasar,status
+MNU-001,"Biji kopi arabika","biji kopi arabika",18,g,Tersimpan
+MNU-001,"Gelas 12 oz","gelas 12 oz",1,pcs,Tersimpan
+MNU-001,"Tutup gelas","tutup gelas",1,pcs,Tersimpan
+MNU-002,"Biji kopi arabika","biji kopi arabika",18,g,Tersimpan
+MNU-002,"Es batu","es batu",120,g,Tersimpan
+MNU-002,"Gelas 16 oz","gelas 16 oz",1,pcs,Tersimpan
+MNU-002,"Tutup gelas","tutup gelas",1,pcs,Tersimpan
+MNU-002,Sedotan,sedotan,1,pcs,Tersimpan
+MNU-003,"Biji kopi arabika","biji kopi arabika",18,g,Tersimpan
+MNU-003,"Susu UHT","susu uht",150,ml,Tersimpan
+MNU-003,"Gelas 16 oz","gelas 16 oz",1,pcs,Tersimpan
+MNU-003,"Tutup gelas","tutup gelas",1,pcs,Tersimpan
+MNU-004,"Biji kopi arabika","biji kopi arabika",18,g,Tersimpan
+MNU-004,"Susu UHT","susu uht",120,ml,Tersimpan
+MNU-004,"Gelas 12 oz","gelas 12 oz",1,pcs,Tersimpan
+MNU-004,"Tutup gelas","tutup gelas",1,pcs,Tersimpan
+MNU-005,"Biji kopi arabica","biji kopi arabika",18,g,Tersimpan
+MNU-005,"Susu UHT","susu uht",100,ml,Tersimpan
+MNU-005,"Gelas 12 oz","gelas 12 oz",1,pcs,Tersimpan
+MNU-005,"Tutup gelas","tutup gelas",1,pcs,Tersimpan
+MNU-006,"Biji kopi robusta","biji kopi robusta",18,g,Tersimpan
+MNU-006,"Susu UHT","susu uht",100,ml,Tersimpan
+MNU-006,"Gula aren cair","gula aren cair",20,ml,Tersimpan
+MNU-006,"Es batu","es batu",100,g,Tersimpan
+MNU-006,"Gelas 16 oz","gelas 16 oz",1,pcs,Tersimpan
+MNU-006,"Tutup gelas","tutup gelas",1,pcs,Tersimpan
+MNU-006,Sedotan,sedotan,1,pcs,Tersimpan
+MNU-007,"Biji kopi arabika","biji kopi arabika",18,g,Tersimpan
+MNU-007,"Susu UHT","susu uht",120,ml,Tersimpan
+MNU-007,"Cokelat bubuk","cokelat bubuk",20,g,Tersimpan
+MNU-007,"Whipped cream","whipped cream",15,ml,Tersimpan
+MNU-007,"Gelas 16 oz","gelas 16 oz",1,pcs,Tersimpan
+MNU-007,"Tutup gelas","tutup gelas",1,pcs,Tersimpan
+MNU-008,"Matcha bubuk","matcha bubuk",8,g,Tersimpan
+MNU-008,"Susu UHT","susu uht",150,ml,Tersimpan
+MNU-008,"Gula pasir","gula pasir",10,g,Tersimpan
+MNU-008,"Gelas 16 oz","gelas 16 oz",1,pcs,Tersimpan
+MNU-008,"Tutup gelas","tutup gelas",1,pcs,Tersimpan
+MNU-009,"Teh celup","teh celup",1,pcs,Tersimpan
+MNU-009,Lemon,lemon,1,pcs,Tersimpan
+MNU-009,"Gula pasir","gula pasir",15,g,Tersimpan
+MNU-009,"Es batu","es batu",100,g,Tersimpan
+MNU-009,"Gelas 16 oz","gelas 16 oz",1,pcs,Tersimpan
+MNU-009,"Tutup gelas","tutup gelas",1,pcs,Tersimpan
+MNU-009,Sedotan,sedotan,1,pcs,Tersimpan
+MNU-010,"Cokelat bubuk","cokelat bubuk",25,g,Tersimpan
+MNU-010,"Susu UHT","susu uht",180,ml,Tersimpan
+MNU-010,"Gula pasir","gula pasir",10,g,Tersimpan
+MNU-010,"Gelas 12 oz","gelas 12 oz",1,pcs,Tersimpan
+MNU-010,"Tutup gelas","tutup gelas",1,pcs,Tersimpan
+MNU-011,"Teh celup","teh celup",1,pcs,Tersimpan
+MNU-011,"Gula pasir","gula pasir",15,g,Tersimpan
+MNU-011,"Es batu","es batu",100,g,Tersimpan
+MNU-011,"Gelas 16 oz","gelas 16 oz",1,pcs,Tersimpan
+MNU-011,"Tutup gelas","tutup gelas",1,pcs,Tersimpan
+MNU-011,Sedotan,sedotan,1,pcs,Tersimpan
+MNU-012,"Roti tawar","roti tawar",3,pcs,Tersimpan
+MNU-012,Mentega,mentega,10,g,Tersimpan
+MNU-012,"Cokelat bubuk","cokelat bubuk",15,g,Tersimpan
+MNU-013,"Roti tawar","roti tawar",3,pcs,Tersimpan
+MNU-013,Mentega,mentega,10,g,Tersimpan
+MNU-013,"Keju slice","keju slice",2,pcs,Tersimpan
+MNU-014,"Kentang beku","kentang beku",200,g,Tersimpan
+MNU-003,"Susu oat","susu oat",50,ml,"Dilewati: Bahan Tidak Ditemukan"
+MNU-007,"Sirup vanila","sirup vanila",10,ml,"Dilewati: Bahan Tidak Ditemukan"

@@ -3,83 +3,215 @@
 namespace App\Services;
 
 use App\Models\Menu;
-use App\Models\DetailResep;
+
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ResepService
 {
     /**
-     * Menampilkan daftar menu beserta resepnya dengan pencarian dan filter.
+     * Menampilkan daftar menu beserta komposisi resepnya.
      */
-    public function paginate(array $filters = []): LengthAwarePaginator
+    public function paginate(): LengthAwarePaginator
     {
-        $query = Menu::query()
-            ->with(['detailResep.bahan_baku']);
-
-        if (!empty($filters['q'])) {
-            $keyword = trim($filters['q']);
-            $query->where('nama', 'like', '%' . $keyword . '%');
-        }
-
-        if (isset($filters['resep_lengkap'])) {
-            $query->where(
-                'resep_lengkap',
-                filter_var($filters['resep_lengkap'], FILTER_VALIDATE_BOOLEAN)
-            );
-        }
-
-        return $query
+        return Menu::query()
+            ->with([
+                'detailResep.bahanBaku',
+            ])
+            ->withCount('detailResep')
             ->orderBy('nama')
-            ->paginate(15)
-            ->withQueryString();
+            ->paginate(15);
     }
 
     /**
-     * Mengambil data resep untuk menu tertentu.
+     * Melihat resep dari satu menu.
+     */
+    public function show(Menu $menu): Menu
+    {
+        return $menu->load([
+            'detailResep.bahanBaku',
+        ]);
+    }
+
+    /**
+     * Alias untuk melihat resep suatu menu.
      */
     public function getByMenu(Menu $menu): Menu
     {
-        return $menu->load(['detailResep.bahan_baku']);
+        return $this->show($menu);
     }
 
     /**
-     * Menyimpan atau memperbarui daftar resep untuk menu.
+     * Menyimpan / memperbarui resep untuk menu.
      */
     public function save(Menu $menu, array $items): Menu
     {
         return DB::transaction(function () use ($menu, $items) {
-            // Hapus resep yang lama untuk menu ini
-            $menu->detailResep()->delete();
+            $menu = Menu::query()
+                ->lockForUpdate()
+                ->findOrFail($menu->id);
 
-            // Simpan resep yang baru
-            foreach ($items as $item) {
-                $menu->detailResep()->create([
-                    'bahan_baku_id' => $item['bahan_baku_id'],
-                    'jumlah_per_porsi' => $item['jumlah_per_porsi'],
-                ]);
-            }
+            $syncData = $this->preparePivotData($items);
 
-            // Update status resep lengkap pada menu
-            $menu->update([
-                'resep_lengkap' => count($items) > 0,
+            $menu->bahanBakus()->sync($syncData);
+
+            $menu->resep_lengkap = count($syncData) > 0;
+            $menu->save();
+
+            return $menu->fresh()->load([
+                'detailResep.bahanBaku',
             ]);
-
-            return $menu->fresh(['detailResep.bahan_baku']);
         });
     }
 
     /**
-     * Menghapus semua resep pada suatu menu.
+     * Mengubah daftar bahan menjadi data pivot.
+     */
+    private function preparePivotData(array $items): array
+    {
+        $syncData = [];
+
+        foreach ($items as $item) {
+
+            $bahanId = (int) $item['bahan_baku_id'];
+
+            $syncData[$bahanId] = [
+                'jumlah_per_porsi' =>
+                    $item['jumlah_per_porsi'],
+            ];
+
+        }
+
+        return $syncData;
+    }
+
+    /**
+     * Membuat resep baru.
+     */
+    public function create(
+        Menu $menu,
+        array $data
+    ): Menu {
+
+        return DB::transaction(function () use (
+            $menu,
+            $data
+        ) {
+
+            // Mengunci baris menu selama proses transaksi.
+            $menu = Menu::query()
+                ->lockForUpdate()
+                ->findOrFail($menu->id);
+
+            // Pastikan menu belum mempunyai resep.
+            if ($menu->detailResep()->exists()) {
+
+                throw ValidationException::withMessages([
+                    'resep' =>
+                        'Menu sudah memiliki resep. Gunakan fitur ubah resep.',
+                ]);
+
+            }
+
+            // Siapkan data untuk tabel detail_resep.
+            $syncData = $this->preparePivotData(
+                $data['bahan']
+            );
+
+            // Simpan seluruh komposisi bahan.
+            $menu->bahanBakus()->sync($syncData);
+
+            // Tandai resep sudah tersedia.
+            $menu->resep_lengkap = true;
+
+            $menu->save();
+
+            // Kembalikan menu beserta seluruh komposisinya.
+            return $menu->fresh()->load([
+                'detailResep.bahanBaku',
+            ]);
+
+        });
+
+    }
+
+    /**
+     * Memperbarui seluruh komposisi resep.
+     */
+    public function update(
+        Menu $menu,
+        array $data
+    ): Menu {
+
+        return DB::transaction(function () use (
+            $menu,
+            $data
+        ) {
+
+            $menu = Menu::query()
+                ->lockForUpdate()
+                ->findOrFail($menu->id);
+
+            // Pastikan resep sudah pernah dibuat.
+            if (!$menu->detailResep()->exists()) {
+
+                throw ValidationException::withMessages([
+                    'resep' =>
+                        'Menu belum memiliki resep. Gunakan fitur tambah resep.',
+                ]);
+
+            }
+
+            $syncData = $this->preparePivotData(
+                $data['bahan']
+            );
+
+            // Sinkronisasi komposisi baru.
+            $menu->bahanBakus()->sync($syncData);
+
+            // Resep tetap lengkap karena validasi minimal 1 bahan.
+            $menu->resep_lengkap = true;
+
+            $menu->save();
+
+            return $menu->fresh()->load([
+                'detailResep.bahanBaku',
+            ]);
+
+        });
+
+    }
+
+    /**
+     * Menghapus seluruh komposisi resep suatu menu.
      */
     public function delete(Menu $menu): void
     {
         DB::transaction(function () use ($menu) {
-            $menu->detailResep()->delete();
 
-            $menu->update([
-                'resep_lengkap' => false,
-            ]);
+            $menu = Menu::query()
+                ->lockForUpdate()
+                ->findOrFail($menu->id);
+
+            if (!$menu->detailResep()->exists()) {
+
+                throw ValidationException::withMessages([
+                    'resep' =>
+                        'Menu belum memiliki resep.',
+                ]);
+
+            }
+
+            // Hapus hubungan bahan dengan menu.
+            $menu->bahanBakus()->detach();
+
+            // Menu tidak lagi mempunyai resep lengkap.
+            $menu->resep_lengkap = false;
+
+            $menu->save();
+
         });
+
     }
 }

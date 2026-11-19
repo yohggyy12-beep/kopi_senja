@@ -1,0 +1,3 @@
+nama_file,nomor_baris,kode_menu,nama_bahan,alasan_dilewati
+resep.csv,65,MNU-003,"Susu oat","Bahan baku 'Susu oat' tidak ditemukan di database"
+resep.csv,66,MNU-007,"Sirup vanila","Bahan baku 'Sirup vanila' tidak ditemukan di database"

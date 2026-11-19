@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DetailResep extends Model
 {
@@ -20,6 +21,19 @@ class DetailResep extends Model
             'jumlah_per_porsi' => 'float',
         ];
     }
-    public function menu(){ return $this->belongsTo(Menu::class);}
-    public function bahan_baku(){ return $this->belongsTo(BahanBaku::class);}
+
+    public function menu(): BelongsTo
+    {
+        return $this->belongsTo(Menu::class, 'menu_id');
+    }
+
+    public function bahan_baku(): BelongsTo
+    {
+        return $this->belongsTo(BahanBaku::class, 'bahan_baku_id');
+    }
+
+    public function bahanBaku(): BelongsTo
+    {
+        return $this->belongsTo(BahanBaku::class, 'bahan_baku_id');
+    }
 }

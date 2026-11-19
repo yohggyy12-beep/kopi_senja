@@ -13,13 +13,14 @@ return new class extends Migration
 
             $table->foreignId('menu_id')
                 ->constrained('menus')
-                ->restrictOnDelete();
+                ->cascadeOnDelete();
 
             $table->foreignId('bahan_baku_id')
                 ->constrained('bahan_baku')
                 ->restrictOnDelete();
 
-            $table->decimal('jumlah_per_porsi', 14, 3);
+            $table->decimal('jumlah_per_porsi', 12, 3)->unsigned();
+
             $table->timestamps();
 
             $table->unique(['menu_id', 'bahan_baku_id']);
@@ -31,3 +32,4 @@ return new class extends Migration
         Schema::dropIfExists('detail_resep');
     }
 };
+

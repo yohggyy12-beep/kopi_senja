@@ -3,27 +3,33 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\BahanBaku;
 
 class PembelianStok extends Model
 {
     protected $table = 'pembelian_stok';
 
-    public $fillable = [
+    protected $fillable = [
         'bahan_baku_id',
         'dicatat_oleh_pengguna_id',
-        'harga_satuan',
+        'jumlah',
         'tanggal_pembelian',
     ];
-    public function casts(): array
+
+    protected function casts(): array
     {
         return [
-            'jumlah' => 'float',
-            'harga_satuan' => 'float',
-            'tanggal_pembelian' => 'date',
+            'jumlah'             => 'float',
+            'tanggal_pembelian'  => 'date',
         ];
     }
-    public function bahan_baku(){ return $this->belongsTo(BahanBaku::class);}
-    public function dicatat_oleh_pengguna(){ return $this->belongsTo(User::class, 'dicatat_oleh_pengguna_id');}
 
+    public function bahanBaku()
+    {
+        return $this->belongsTo(BahanBaku::class, 'bahan_baku_id');
+    }
+
+    public function dicatatOleh()
+    {
+        return $this->belongsTo(User::class, 'dicatat_oleh_pengguna_id');
+    }
 }

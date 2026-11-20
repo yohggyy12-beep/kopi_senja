@@ -15,25 +15,26 @@ class DetailResep extends Model
         'jumlah_per_porsi',
     ];
 
-    public function casts(): array
+    protected function casts(): array
     {
         return [
-            'jumlah_per_porsi' => 'float',
+            'jumlah_per_porsi' => 'decimal:3',
         ];
     }
 
     public function menu(): BelongsTo
     {
-        return $this->belongsTo(Menu::class, 'menu_id');
-    }
-
-    public function bahan_baku(): BelongsTo
-    {
-        return $this->belongsTo(BahanBaku::class, 'bahan_baku_id');
+        return $this->belongsTo(
+            Menu::class,
+            'menu_id'
+        );
     }
 
     public function bahanBaku(): BelongsTo
     {
-        return $this->belongsTo(BahanBaku::class, 'bahan_baku_id');
+        return $this->belongsTo(
+            BahanBaku::class,
+            'bahan_baku_id'
+        );
     }
 }

@@ -2,28 +2,64 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePembelianStokRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->isManager() ?? false;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'bahan_baku_id' => [
+                'required',
+                'integer',
+                'exists:bahan_baku,id',
+            ],
+
+            'jumlah' => [
+                'required',
+                'numeric',
+                'gt:0',
+                'decimal:0,3',
+            ],
+
+            'tanggal_pembelian' => [
+                'required',
+                'date',
+            ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'bahan_baku_id.required' =>
+                'Bahan baku wajib dipilih.',
+
+            'bahan_baku_id.exists' =>
+                'Bahan baku tidak ditemukan.',
+
+            'jumlah.required' =>
+                'Jumlah pembelian wajib diisi.',
+
+            'jumlah.numeric' =>
+                'Jumlah pembelian harus berupa angka.',
+
+            'jumlah.gt' =>
+                'Jumlah pembelian harus lebih dari nol.',
+
+            'jumlah.decimal' =>
+                'Jumlah maksimal menggunakan tiga angka desimal.',
+
+            'tanggal_pembelian.required' =>
+                'Tanggal pembelian wajib diisi.',
+
+            'tanggal_pembelian.date' =>
+                'Format tanggal pembelian tidak valid.',
         ];
     }
 }

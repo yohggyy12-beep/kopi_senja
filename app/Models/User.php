@@ -31,23 +31,18 @@ class User extends Authenticatable
             'wajib_ganti_kata_sandi' => 'boolean',
         ];
     }
-    public function pesanan()
-    {
-        return $this->hasMany(Pesanan::class, 'menu_id');
-    }
-
-    // Memberi tahu Laravel lokasi password sebenarnya.
+    // Memberi tahu Laravel lokasi password sebenarnya
     public function getAuthPassword()
     {
         return $this->kata_sandi;
     }
 
-    // Konstanta peran.
+    // Konstanta peran
     public const PERAN_MANAGER = 'manager';
     public const PERAN_KASIR = 'kasir';
     public const PERAN_PELANGGAN = 'pelanggan';
 
-    // Relasi dengan pesanan yang dibuat pengguna.
+    // Relasi dengan pesanan yang dibuat pengguna
     public function pesananDibuat(): HasMany
     {
         return $this->hasMany(

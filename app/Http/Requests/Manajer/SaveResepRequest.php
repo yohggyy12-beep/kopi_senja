@@ -4,11 +4,12 @@ namespace App\Http\Requests\Manajer;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class SaveResepRequest extends FormRequest
 {
     /**
-     * Memastikan hanya Manajer yang boleh mengelola resep.
+     * Hanya Manajer yang boleh mengelola resep.
      */
     public function authorize(): bool
     {
@@ -16,71 +17,75 @@ class SaveResepRequest extends FormRequest
     }
 
     /**
-     * Menyesuaikan input sebelum proses validasi.
-     */
-    protected function prepareForValidation(): void
-    {
-        // Mendukung payload baik dengan key 'items' maupun 'resep'
-        if ($this->has('resep') && !$this->has('items')) {
-            $this->merge([
-                'items' => $this->input('resep'),
-            ]);
-        }
-    }
-
-    /**
-     * Aturan validasi penyimpanan resep.
+     * Aturan validasi komposisi resep.
      */
     public function rules(): array
     {
-        $rules = [
-            'items' => [
+        return [
+
+            // Resep harus berupa array.
+            'bahan' => [
                 'required',
                 'array',
                 'min:1',
             ],
-            'items.*.bahan_baku_id' => [
+
+            // Setiap bahan wajib mempunyai ID.
+            'bahan.*.bahan_baku_id' => [
                 'required',
                 'integer',
-                'exists:bahan_baku,id',
                 'distinct',
+                Rule::exists('bahan_baku', 'id'),
             ],
-            'items.*.jumlah_per_porsi' => [
+
+            // Takaran wajib berupa angka positif.
+            'bahan.*.jumlah_per_porsi' => [
                 'required',
                 'numeric',
                 'gt:0',
+                'decimal:0,3',
             ],
+
         ];
-
-        // Jika menu_id tidak disediakan via route parameter, maka wajib ada di body request
-        if (!$this->route('menu')) {
-            $rules['menu_id'] = [
-                'required',
-                'integer',
-                'exists:menus,id',
-            ];
-        }
-
-        return $rules;
     }
 
     /**
-     * Pesan kustom kesalahan validasi.
+     * Pesan validasi.
      */
     public function messages(): array
     {
         return [
-            'menu_id.required' => 'Menu wajib dipilih.',
-            'menu_id.exists' => 'Menu yang dipilih tidak ditemukan.',
-            'items.required' => 'Daftar bahan baku resep wajib diisi.',
-            'items.array' => 'Daftar bahan baku resep harus berupa array.',
-            'items.min' => 'Resep minimal harus memiliki 1 bahan baku.',
-            'items.*.bahan_baku_id.required' => 'Bahan baku wajib dipilih.',
-            'items.*.bahan_baku_id.exists' => 'Bahan baku yang dipilih tidak ditemukan.',
-            'items.*.bahan_baku_id.distinct' => 'Bahan baku tidak boleh duplikat pada satu resep.',
-            'items.*.jumlah_per_porsi.required' => 'Jumlah takaran per porsi wajib diisi.',
-            'items.*.jumlah_per_porsi.numeric' => 'Jumlah takaran harus berupa angka.',
-            'items.*.jumlah_per_porsi.gt' => 'Jumlah takaran harus lebih dari nol.',
+
+            'bahan.required' =>
+                'Komposisi resep wajib diisi.',
+
+            'bahan.array' =>
+                'Format komposisi resep tidak valid.',
+
+            'bahan.min' =>
+                'Resep minimal harus mempunyai satu bahan.',
+
+            'bahan.*.bahan_baku_id.required' =>
+                'Bahan baku wajib dipilih.',
+
+            'bahan.*.bahan_baku_id.exists' =>
+                'Bahan baku yang dipilih tidak tersedia.',
+
+            'bahan.*.bahan_baku_id.distinct' =>
+                'Bahan yang sama tidak boleh dimasukkan dua kali.',
+
+            'bahan.*.jumlah_per_porsi.required' =>
+                'Takaran setiap bahan wajib diisi.',
+
+            'bahan.*.jumlah_per_porsi.numeric' =>
+                'Takaran harus berupa angka.',
+
+            'bahan.*.jumlah_per_porsi.gt' =>
+                'Takaran harus lebih dari nol.',
+
+            'bahan.*.jumlah_per_porsi.decimal' =>
+                'Takaran maksimal memiliki tiga angka desimal.',
+
         ];
     }
 }

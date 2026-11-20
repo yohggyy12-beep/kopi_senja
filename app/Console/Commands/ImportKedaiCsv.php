@@ -393,7 +393,6 @@ class ImportKedaiCsv extends Command
 
         return $rows;
     }
-
     /**
      * Menulis data array asosiatif ke file CSV.
      */

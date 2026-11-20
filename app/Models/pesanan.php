@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pesanan extends Model
 {
+    protected $table = 'pesanan';
+
     public $fillable = [
         'nomor_pesanan',
         'dibuat_oleh_pengguna_id',
@@ -17,6 +21,7 @@ class Pesanan extends Model
         'jumlah_pajak',
         'total_harga',
     ];
+
     public function casts(): array
     {
         return [
@@ -27,6 +32,14 @@ class Pesanan extends Model
         ];
     }
 
-    public function dibuat_oleh_pengguna(){ return $this->belongsTo(User::class, 'dibuat_oleh_pengguna_id');}
-    public function DetailPesanan(){ return $this->hasMany(DetailPesanan::class);}
+    public function dibuatOleh(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'dibuat_oleh_pengguna_id');
+    }
+
+    public function detailPesanan(): HasMany
+    {
+        return $this->hasMany(DetailPesanan::class, 'pesanan_id');
+    }
 }
+

@@ -1,12 +1,64 @@
-@import 'tailwindcss';
-@import 'bootstrap/dist/css/bootstrap.min.css';
+@import "tailwindcss";
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+/* Sumber file yang dipindai Tailwind */
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../storage/framework/views/*.php";
+@source "../views";
+@source "../js";
+
+/* ==================================================
+   DESIGN SYSTEM - KEDAI KOPI SENJA
+================================================== */
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+
+    /* Warna cream */
+    --color-cream-50: #faf8f5;
+    --color-cream-100: #f5f0e9;
+    --color-cream-200: #eee5da;
+
+    /* Warna cokelat kopi */
+    --color-coffee-50: #f8f4ef;
+    --color-coffee-100: #eaded2;
+    --color-coffee-200: #d8c4b2;
+    --color-coffee-600: #8a6247;
+    --color-coffee-700: #704b34;
+    --color-coffee-800: #593923;
+    --color-coffee-900: #422a1d;
+
+    /* Warna teks */
+    --color-ink-900: #30251e;
+    --color-muted: #806e60;
+
+    /* Warna status */
+    --color-status-success: #27643b;
+    --color-status-warning: #a65a00;
+    --color-status-danger: #b42318;
+}
+
+/* ==================================================
+   GLOBAL
+================================================== */
+
+@layer base {
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        @apply bg-cream-50 text-ink-900 font-sans antialiased;
+    }
+
+    a {
+        @apply no-underline;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+        font: inherit;
+    }
 }

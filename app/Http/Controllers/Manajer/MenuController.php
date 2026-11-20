@@ -3,16 +3,14 @@
 namespace App\Http\Controllers\Manajer;
 
 use App\Http\Controllers\Controller;
-
 use App\Http\Requests\Manajer\StoreMenuRequest;
 use App\Http\Requests\Manajer\UpdateMenuRequest;
-
 use App\Models\Menu;
-
 use App\Services\MenuService;
-
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class MenuController extends Controller
 {
@@ -27,17 +25,32 @@ class MenuController extends Controller
     /**
      * Menampilkan daftar menu.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
-        $menus = $this->menuService->paginate(
-            $request->only([
-                'q',
-                'kategori',
-                'status',
-            ])
-        );
+        $filters = $request->only([
+            'q',
+            'kategori',
+            'status',
+        ]);
 
-        return response()->json($menus);
+        $menus = $this->menuService->paginate($filters);
+
+        if ($request->wantsJson()) {
+            return response()->json($menus);
+        }
+
+        $q = $request->input('q', '');
+        $kategori = $request->input('kategori', '');
+        $status = $request->input('status', '');
+
+        $editItem = null;
+        if ($request->filled('edit')) {
+            $editItem = Menu::find($request->input('edit'));
+        }
+
+        $kategoriOptions = ['Minuman', 'Makanan'];
+
+        return view('manajer.menu', compact('menus', 'q', 'kategori', 'status', 'editItem', 'kategoriOptions'));
     }
 
     /**
@@ -45,16 +58,20 @@ class MenuController extends Controller
      */
     public function store(
         StoreMenuRequest $request
-    ): JsonResponse {
-
+    ): JsonResponse|RedirectResponse {
         $menu = $this->menuService->create(
             $request->validated()
         );
 
-        return response()->json([
-            'message' => 'Menu berhasil ditambahkan.',
-            'data' => $menu,
-        ], 201);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Menu berhasil ditambahkan.',
+                'data' => $menu,
+            ], 201);
+        }
+
+        return redirect()->route('manajer.menu.index')
+            ->with('success', "Menu '{$menu->nama}' berhasil ditambahkan.");
     }
 
     /**
@@ -63,30 +80,39 @@ class MenuController extends Controller
     public function update(
         UpdateMenuRequest $request,
         Menu $menu
-    ): JsonResponse {
-
+    ): JsonResponse|RedirectResponse {
         $hasil = $this->menuService->update(
             $menu,
             $request->validated()
         );
 
-        return response()->json([
-            'message' => 'Menu berhasil diperbarui.',
-            'data' => $hasil,
-        ]);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Menu berhasil diperbarui.',
+                'data' => $hasil,
+            ]);
+        }
+
+        return redirect()->route('manajer.menu.index')
+            ->with('success', "Menu '{$hasil->nama}' berhasil diperbarui.");
     }
 
     /**
      * Menghapus menu.
      */
     public function destroy(
-        Menu $menu
-    ): JsonResponse {
-
+        Menu $menu,
+        Request $request
+    ): JsonResponse|RedirectResponse {
         $this->menuService->delete($menu);
 
-        return response()->json([
-            'message' => 'Menu berhasil dihapus.',
-        ]);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Menu berhasil dihapus.',
+            ]);
+        }
+
+        return redirect()->route('manajer.menu.index')
+            ->with('success', 'Menu berhasil dihapus.');
     }
 }

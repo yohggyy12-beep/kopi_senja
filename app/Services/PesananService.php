@@ -171,9 +171,9 @@ class PesananService
 
                 'biaya_layanan' => $biayaLayanan,
 
-                'pajak' => $pajak,
+                'jumlah_pajak' => $pajak,
 
-                'total' => $total,
+                'total_harga' => $total,
             ]);
 
             /*
@@ -188,11 +188,11 @@ class PesananService
 
                     'menu_id' => $item['menu']->id,
 
-                    'nama_menu_snapshot' => $item['menu']->nama,
+                    'nama_menu_saat_pemesanan' => $item['menu']->nama,
 
                     'jumlah' => $item['jumlah'],
 
-                    'harga_satuan_snapshot' => $item['harga'],
+                    'harga_satuan_saat_pemesanan' => $item['harga'],
 
                     'subtotal' => $item['subtotal'],
                 ]);

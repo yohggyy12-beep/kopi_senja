@@ -37,6 +37,11 @@ class Pesanan extends Model
         return $this->belongsTo(User::class, 'dibuat_oleh_pengguna_id');
     }
 
+    public function dibuatOlehPengguna(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'dibuat_oleh_pengguna_id');
+    }
+
     public function detailPesanan(): HasMany
     {
         return $this->hasMany(DetailPesanan::class, 'pesanan_id');

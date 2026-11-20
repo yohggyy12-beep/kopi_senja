@@ -3,42 +3,40 @@
 namespace App\Http\Controllers\Manajer;
 
 use App\Http\Controllers\Controller;
+
 use App\Http\Requests\Manajer\StoreBahanBakuRequest;
 use App\Http\Requests\Manajer\UpdateBahanBakuRequest;
 use App\Models\BahanBaku;
 use App\Services\BahanBakuService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class BahanBakuController extends Controller
 {
     protected BahanBakuService $bahanBakuService;
-
     public function __construct(
-        BahanBakuService $bahanBakuService
+        BahanBakuService $BahanBakuService
     ) {
-        $this->bahanBakuService = $bahanBakuService;
+        $this->bahanBakuService = $BahanBakuService;
     }
 
     public function index(Request $request): JsonResponse
     {
-        $bahanBaku = $this->bahanBakuService->paginate(
+        $Bahanbaku = $this->bahanBakuService->paginate(
             $request->only(['q', 'status'])
         );
-
-        return response()->json($bahanBaku);
+        return response()->json($Bahanbaku);
     }
 
     public function store(
-        StoreBahanBakuRequest $request
+        StoreBahanBakuRequest  $request
     ): JsonResponse {
-        $bahanBaku = $this->bahanBakuService->create(
+        $Bahanbaku = $this->bahanBakuService->create(
             $request->validated()
         );
-
         return response()->json([
-            'message' => 'Bahan baku berhasil ditambahkan',
-            'data' => $bahanBaku,
+            'massage' => 'Bahan baku berhasil ditambahkan',
+            'data' => $Bahanbaku,
         ], 201);
     }
 
@@ -50,10 +48,9 @@ class BahanBakuController extends Controller
             $bahanBaku,
             $request->validated()
         );
-
-        return response()->json([
-            'message' => 'Bahan baku berhasil diubah',
-            'data' => $hasil,
+        return Response()->json([
+            'massage' => 'Bahan baku berhasil diubah',
+            'data' => $hasil
         ]);
     }
 
@@ -65,6 +62,6 @@ class BahanBakuController extends Controller
 
         return response()->json([
             'message' => 'Bahan baku berhasil dihapus.',
-        ]);
+            ]);
+         }
     }
-}

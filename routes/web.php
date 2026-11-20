@@ -8,6 +8,9 @@ use App\Http\Controllers\Kasir\ResetCustomerPasswordController;
 use App\Http\Controllers\Manajer\BahanBakuController;
 use App\Http\Controllers\Manajer\MenuController;
 use App\Http\Controllers\Manajer\ResepController;
+use App\Http\Controllers\Manajer\PembelianStokController;
+use App\Http\Controllers\Kasir\PesananController;
+use App\Http\Controllers\Manajer\HargaBahanController;
 
 
 
@@ -94,6 +97,11 @@ Route::middleware('auth')->group(function(){
             [BahanBakuController::class, 'destroy']
         )->name('bahan-baku.destroy');
 
+        Route::post(
+            '/harga-bahan',
+            [HargaBahanController::class, 'perbarui']
+        )->name('harga-bahan.perbarui');
+
     });
 
     Route::middleware([
@@ -124,5 +132,63 @@ Route::middleware('auth')->group(function(){
         Route::post('/resep', [ResepController::class, 'store'])->name('resep.store');
         Route::put('/resep/{menu}', [ResepController::class, 'update'])->name('resep.update');
         Route::delete('/resep/{menu}', [ResepController::class, 'destroy'])->name('resep.destroy');
+
+
+        Route::get(
+    '/pembelian-stok',
+    [PembelianStokController::class, 'index']
+)->name('pembelian-stok.index');
+
+Route::post(
+    '/pembelian-stok',
+    [PembelianStokController::class, 'store']
+)->name('pembelian-stok.store');
+
+Route::get(
+    '/stok-menipis',
+    [PembelianStokController::class, 'stokMenipis']
+)->name('stok-menipis.index');
+
+Route::put(
+    '/bahan-baku/{bahanBaku}/stok-minimum',
+    [PembelianStokController::class, 'updateStokMinimum']
+)->name('bahan-baku.stok-minimum.update');
     });
 
+
+    Route::middleware(['auth', 'role:kasir'])
+    ->prefix('kasir')
+    ->name('kasir.')
+    ->group(function () {
+
+        // Daftar pesanan
+        Route::get('/pesanan', [
+            PesananController::class,
+            'index'
+        ])->name('pesanan.index');
+
+        // Membuat pesanan baru
+        Route::post('/pesanan', [
+            PesananController::class,
+            'store'
+        ])->name('pesanan.store');
+
+        // Detail pesanan dan struk
+        Route::get('/pesanan/{pesanan}', [
+            PesananController::class,
+            'show'
+        ])->name('pesanan.show');
+
+        // Mengubah status pesanan
+        Route::put('/pesanan/{pesanan}/status', [
+            PesananController::class,
+            'updateStatus'
+        ])->name('pesanan.status');
+
+        // Membatalkan pesanan
+        Route::delete('/pesanan/{pesanan}', [
+            PesananController::class,
+            'destroy'
+        ])->name('pesanan.destroy');
+
+    });

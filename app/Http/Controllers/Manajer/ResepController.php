@@ -3,82 +3,89 @@
 namespace App\Http\Controllers\Manajer;
 
 use App\Http\Controllers\Controller;
+
 use App\Http\Requests\Manajer\SaveResepRequest;
+
 use App\Models\Menu;
+
 use App\Services\ResepService;
-use Illuminate\Http\JsonResponse;
+
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class ResepController extends Controller
 {
     protected ResepService $resepService;
 
-    public function __construct(ResepService $resepService)
-    {
+    public function __construct(
+        ResepService $resepService
+    ) {
         $this->resepService = $resepService;
     }
 
     /**
-     * Menampilkan daftar menu beserta resepnya.
+     * Menampilkan daftar menu beserta resep.
      */
-    public function index(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $data = $this->resepService->paginate(
-            $request->only(['q', 'resep_lengkap'])
-        );
+        $menus = $this->resepService->paginate();
 
-        return response()->json($data);
+        return response()->json($menus);
     }
 
     /**
-     * Menampilkan detail resep untuk menu tertentu.
+     * Melihat komposisi resep suatu menu.
      */
     public function show(Menu $menu): JsonResponse
     {
-        $data = $this->resepService->getByMenu($menu);
+        $hasil = $this->resepService->show($menu);
 
         return response()->json([
-            'data' => $data,
+            'message' => 'Resep berhasil ditemukan.',
+            'data' => $hasil,
         ]);
     }
 
     /**
-     * Menyimpan resep untuk menu (menu_id di body request).
+     * Membuat resep baru.
      */
-    public function store(SaveResepRequest $request): JsonResponse
-    {
-        $menuId = $request->input('menu_id');
-        $menu = Menu::findOrFail($menuId);
+    public function store(
+        SaveResepRequest $request,
+        Menu $menu
+    ): JsonResponse {
 
-        $result = $this->resepService->save(
+        $hasil = $this->resepService->create(
             $menu,
-            $request->validated()['items']
+            $request->validated()
         );
 
         return response()->json([
-            'message' => 'Resep berhasil disimpan.',
-            'data' => $result,
+            'message' => 'Resep berhasil dibuat.',
+            'data' => $hasil,
         ], 201);
     }
 
     /**
-     * Memperbarui resep untuk menu (menu via route parameter).
+     * Memperbarui komposisi resep.
      */
-    public function update(SaveResepRequest $request, Menu $menu): JsonResponse
-    {
-        $result = $this->resepService->save(
+    public function update(
+        SaveResepRequest $request,
+        Menu $menu
+    ): JsonResponse {
+
+        $hasil = $this->resepService->update(
             $menu,
-            $request->validated()['items']
+            $request->validated()
         );
 
         return response()->json([
             'message' => 'Resep berhasil diperbarui.',
-            'data' => $result,
+            'data' => $hasil,
         ]);
     }
 
     /**
-     * Menghapus resep dari menu tertentu.
+     * Menghapus resep.
      */
     public function destroy(Menu $menu): JsonResponse
     {

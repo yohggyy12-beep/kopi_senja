@@ -44,7 +44,7 @@ class PesananService
                 $jumlahPorsi = (int) $item['jumlah'];
 
                 // Menu nonaktif tidak boleh dipesan.
-                if (!$menu->is_aktif) {
+                if (!$menu->status_aktif) {
                     throw ValidationException::withMessages([
                         'menu' => "Menu {$menu->nama} sedang nonaktif.",
                     ]);
@@ -86,7 +86,7 @@ class PesananService
                     $bahanId = $resep->bahan_baku_id;
 
                     $jumlahDigunakan =
-                        (float) $resep->jumlah * $jumlahPorsi;
+                        (float) $resep->jumlah_per_porsi * $jumlahPorsi;
 
                     $kebutuhanBahan[$bahanId] =
                         ($kebutuhanBahan[$bahanId] ?? 0)
@@ -204,7 +204,7 @@ class PesananService
                 foreach ($item['resep'] as $resep) {
 
                     $jumlahDigunakan =
-                        (float) $resep->jumlah * $item['jumlah'];
+                        (float) $resep->jumlah_per_porsi * $item['jumlah'];
 
                     DetailBahanPesanan::create([
                         'detail_pesanan_id' => $detail->id,

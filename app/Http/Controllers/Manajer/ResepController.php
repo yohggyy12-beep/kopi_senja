@@ -16,9 +16,8 @@ class ResepController extends Controller
 {
     protected ResepService $resepService;
 
-    public function __construct(
-        ResepService $resepService
-    ) {
+    public function __construct(ResepService $resepService)
+    {
         $this->resepService = $resepService;
     }
 
@@ -29,12 +28,17 @@ class ResepController extends Controller
     {
         if ($request->wantsJson()) {
             $menus = $this->resepService->paginate();
+
             return response()->json($menus);
         }
 
         $pertama = Menu::orderBy('nama')->first();
+
         if ($pertama) {
-            return redirect()->route('manajer.resep.show', $pertama->id);
+            return redirect()->route(
+                'manajer.resep.show',
+                $pertama->id
+            );
         }
 
         return view('manajer.resep', [
@@ -45,7 +49,7 @@ class ResepController extends Controller
     }
 
     /**
-     * Melihat komposisi resep suatu menu.
+     * Menampilkan komposisi resep dari satu menu.
      */
     public function show(Menu $menu, Request $request): JsonResponse|View
     {
@@ -69,46 +73,50 @@ class ResepController extends Controller
     }
 
     /**
-     * Membuat resep baru (atau menambah bahan via web).
+     * Menambahkan satu bahan melalui form Blade.
      */
     public function store(
         Request $request,
         Menu $menu
     ): JsonResponse|RedirectResponse {
-        // Jika request dari web untuk menambah satu bahan
         if (!$request->wantsJson() && $request->has('bahan_baku_id')) {
             $request->validate([
                 'bahan_baku_id' => 'required|exists:bahan_baku,id',
                 'jumlah_per_porsi' => 'required|numeric|gt:0',
             ]);
 
-            $existing = $menu->detailResep->map(fn($d) => [
+            $existing = $menu->detailResep->map(fn ($d) => [
                 'bahan_baku_id' => $d->bahan_baku_id,
                 'jumlah_per_porsi' => $d->jumlah_per_porsi,
             ])->toArray();
 
-            // Cek duplikasi
-            $bahanBaruId = (int)$request->input('bahan_baku_id');
+            // Mencegah bahan yang sama ditambahkan dua kali.
+            $bahanBaruId = (int) $request->input('bahan_baku_id');
+
             foreach ($existing as $item) {
-                if ($item['bahan_baku_id'] == $bahanBaruId) {
+                if ((int) $item['bahan_baku_id'] === $bahanBaruId) {
                     return redirect()->back()->withErrors([
-                        'bahan_baku_id' => 'Bahan ini sudah ada di resep menu ini (duplikat dicegah).'
+                        'bahan_baku_id' =>
+                            'Bahan ini sudah ada di resep menu ini.',
                     ]);
                 }
             }
 
             $existing[] = [
                 'bahan_baku_id' => $bahanBaruId,
-                'jumlah_per_porsi' => (float)$request->input('jumlah_per_porsi'),
+                'jumlah_per_porsi' =>
+                    (float) $request->input('jumlah_per_porsi'),
             ];
 
             $this->resepService->save($menu, $existing);
 
-            return redirect()->route('manajer.resep.show', $menu->id)
+            return redirect()
+                ->route('manajer.resep.show', $menu->id)
                 ->with('success', 'Bahan berhasil ditambahkan ke resep.');
         }
 
-        // Request API standard SaveResepRequest
+        // Request JSON menggunakan validasi Form Request.
+        // Route API diarahkan ke storeApi().
         $hasil = $this->resepService->create(
             $menu,
             $request->all()
@@ -121,13 +129,33 @@ class ResepController extends Controller
     }
 
     /**
-     * Menghapus satu bahan dari komposisi resep suatu menu.
+     * Membuat resep melalui request JSON.
      */
-    public function hapusBahan(Menu $menu, BahanBaku $bahanBaku): RedirectResponse
-    {
+    public function storeApi(
+        SaveResepRequest $request,
+        Menu $menu
+    ): JsonResponse {
+        $hasil = $this->resepService->create(
+            $menu,
+            $request->validated()
+        );
+
+        return response()->json([
+            'message' => 'Resep berhasil dibuat.',
+            'data' => $hasil,
+        ], 201);
+    }
+
+    /**
+     * Menghapus satu bahan dari komposisi resep.
+     */
+    public function hapusBahan(
+        Menu $menu,
+        BahanBaku $bahanBaku
+    ): RedirectResponse {
         $existing = $menu->detailResep
             ->where('bahan_baku_id', '!=', $bahanBaku->id)
-            ->map(fn($d) => [
+            ->map(fn ($d) => [
                 'bahan_baku_id' => $d->bahan_baku_id,
                 'jumlah_per_porsi' => $d->jumlah_per_porsi,
             ])
@@ -136,12 +164,16 @@ class ResepController extends Controller
 
         $this->resepService->save($menu, $existing);
 
-        return redirect()->route('manajer.resep.show', $menu->id)
-            ->with('success', "Bahan '{$bahanBaku->nama}' dihapus dari resep.");
+        return redirect()
+            ->route('manajer.resep.show', $menu->id)
+            ->with(
+                'success',
+                "Bahan '{$bahanBaku->nama}' dihapus dari resep."
+            );
     }
 
     /**
-     * Memperbarui komposisi resep (API).
+     * Memperbarui seluruh komposisi resep.
      */
     public function update(
         SaveResepRequest $request,
@@ -159,15 +191,18 @@ class ResepController extends Controller
             ]);
         }
 
-        return redirect()->route('manajer.resep.show', $menu->id)
+        return redirect()
+            ->route('manajer.resep.show', $menu->id)
             ->with('success', 'Resep berhasil diperbarui.');
     }
 
     /**
-     * Menghapus seluruh resep.
+     * Menghapus seluruh komposisi resep dari satu menu.
      */
-    public function destroy(Menu $menu, Request $request): JsonResponse|RedirectResponse
-    {
+    public function destroy(
+        Menu $menu,
+        Request $request
+    ): JsonResponse|RedirectResponse {
         $this->resepService->delete($menu);
 
         if ($request->wantsJson()) {
@@ -176,7 +211,8 @@ class ResepController extends Controller
             ]);
         }
 
-        return redirect()->route('manajer.resep.show', $menu->id)
+        return redirect()
+            ->route('manajer.resep.show', $menu->id)
             ->with('success', 'Resep berhasil dihapus.');
     }
 }
